@@ -37,20 +37,4 @@ class Constants {
             return name.toLowerCase(Locale.ROOT)
         }}
 
-    enum class SECTIONS {
-        WORLD,
-        SCIENCE,
-        SPORT,
-        ENVIRONMENT,
-        SOCIETY,
-        FASHION,
-        BUSINESS,
-        CULTURE;
-
-        override fun toString(): String {
-            return name.toLowerCase(Locale.ROOT)
-        }}
-
-        val NO_SECTION = null
-
 }

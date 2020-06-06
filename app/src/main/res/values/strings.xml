@@ -4,6 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_fragment">Home</string>
     <string name="account_fragment">Account</string>
+    <string name="liked_fragment">Liked</string>
     <string name="text_sample">Lorem Ipsum is simply dummy text of the printing and typesetting
         industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,
         when an unknown printer took a galley of type and scrambled it to make a type specimen book.
@@ -49,6 +50,7 @@
     <string name="share">Share</string>
     <string name="filter">Filter</string>
     <string name="page_title">Page title</string>
+    <string name="liked_news">Liked news</string>
 
     <string-array name="filter_by_date">
         <item>Newest</item>

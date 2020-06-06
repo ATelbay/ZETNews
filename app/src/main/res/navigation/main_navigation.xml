@@ -7,56 +7,6 @@
     app:startDestination="@id/home_fragment">
 
     <fragment
-        android:id="@+id/home_fragment"
-        android:name="com.smqpro.zetnews.view.home.HomeFragment"
-        android:label="@string/home_fragment"
-        tools:layout="@layout/fragment_home">
-
-        <action
-            android:id="@+id/to_details_fragment"
-            app:destination="@id/details_fragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-
-        <action
-            android:id="@+id/to_web_fragment"
-            app:destination="@id/web_fragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
-        <action
-            android:id="@+id/nav_world"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_science"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_sport"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_environment"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_society"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_fashion"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_business"
-            app:destination="@id/home_fragment" />
-        <action
-            android:id="@+id/nav_culture"
-            app:destination="@id/home_fragment" />
-        <argument
-            android:name="category"
-            app:argType="string"
-            app:nullable="true" />
-    </fragment>
-    <fragment
         android:id="@+id/account_fragment"
         android:name="com.smqpro.zetnews.view.account.AccountFragment"
         android:label="@string/account_fragment"
@@ -87,4 +37,68 @@
             android:name="result"
             app:argType="com.smqpro.zetnews.model.response.Result" />
     </fragment>
+
+        <fragment
+            android:id="@+id/home_fragment"
+            android:name="com.smqpro.zetnews.view.home.HomeFragment"
+            android:label="@string/home_fragment"
+            tools:layout="@layout/fragment_home">
+
+            <action
+                android:id="@+id/to_details_fragment"
+                app:destination="@id/details_fragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+            <action
+                android:id="@+id/to_web_fragment"
+                app:destination="@id/web_fragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out" />
+<!--            <action-->
+<!--                android:id="@+id/nav_world"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_science"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_sport"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_environment"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_society"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_fashion"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_business"-->
+<!--                app:destination="@id/home_fragment" />-->
+<!--            <action-->
+<!--                android:id="@+id/nav_culture"-->
+<!--                app:destination="@id/home_fragment" />-->
+            <argument
+                android:name="category"
+                app:argType="string"
+                app:nullable="true" />
+        </fragment>
+    <fragment
+        android:id="@+id/liked_fragment"
+        android:name="com.smqpro.zetnews.view.liked.LikedFragment"
+        android:label="@string/liked_fragment"
+        tools:layout="@layout/fragment_liked" >
+        <action
+            android:id="@+id/to_details_fragment"
+            app:destination="@id/details_fragment" />
+        <action
+            android:id="@+id/to_web_fragment"
+            app:destination="@id/web_fragment" />
+    </fragment>
+
 </navigation>

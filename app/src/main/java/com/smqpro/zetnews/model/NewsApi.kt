@@ -17,7 +17,7 @@ interface NewsApi {
         @Query(Constants.QUERY_PARAM)
         query: String? = null,
         @Query(Constants.SECTION_PARAM)
-        section: Constants.SECTIONS? = null,
+        section: String? = null,
         @Query(Constants.ORDER_BY_PARAM)
         order: Constants.ORDER? = Constants.ORDER.NEWEST,
         @Query(Constants.FROM_DATE_PARAM)

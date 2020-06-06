@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavArgs
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -24,11 +23,9 @@ import com.smqpro.zetnews.util.Resource
 import com.smqpro.zetnews.util.TAG
 import com.smqpro.zetnews.util.sendShareIntent
 import com.smqpro.zetnews.view.MainActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.news_item.view.*
 import kotlinx.coroutines.*
-
 
 class HomeFragment : Fragment(R.layout.fragment_home),
     HomeListAdapter.Interaction {
@@ -92,8 +89,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
-            homeViewModel.newsPage = 1
-            homeViewModel.getNews()
+            homeViewModel.searchNews()
         }
     }
 
@@ -115,12 +111,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 job?.cancel()
                 job = MainScope().launch {
                     delay(SEARCH_DELAY)
-                    if (query == null || query.isEmpty()) {
-                        homeViewModel.getNews()
-                    } else {
-                        homeViewModel.query = query // TODO Hardcode
-                        homeViewModel.searchNews()
+                    query?.let {
+                        homeViewModel.query = it // TODO Hardcode
                     }
+                    homeViewModel.searchNews()
                 }
                 return false
             }

@@ -16,7 +16,7 @@ class HomeRepository(
         newsPage: Int,
         searchQuery: String? = null,
         order: Constants.ORDER = Constants.ORDER.NEWEST,
-        category: Constants.SECTIONS? = null
+        category: String? = null
     ): Response<News> {
         val response = RetrofitInstance.api.getNews(
             page = newsPage,

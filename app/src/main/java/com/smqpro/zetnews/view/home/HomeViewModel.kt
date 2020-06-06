@@ -1,35 +1,26 @@
 package com.smqpro.zetnews.view.home
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.util.Constants
 import com.smqpro.zetnews.util.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.util.*
 
 class HomeViewModel(
     private val homeRepository: HomeRepository
 ) : ViewModel() {
 
     val news = MutableLiveData<Resource<News>>()
-    var newsPage = 1
     var searchPage = 1
     var query = ""
-    var section: Constants.SECTIONS? = null
+    var section: String? = null
 
     var filter = 0
 
     init {
-        getNews()
-    }
-
-
-    fun getNews() = viewModelScope.launch {
-        news.postValue(Resource.Loading())
-        val response = homeRepository.getNews(newsPage)
-        news.postValue(handleNewsResponse(response))
+        searchNews()
     }
 
     fun searchNews() = viewModelScope.launch {
