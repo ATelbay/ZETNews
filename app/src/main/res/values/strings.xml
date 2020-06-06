@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">ZET News</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_fragment">Home</string>
+    <string name="account_fragment">Account</string>
+    <string name="text_sample">Lorem Ipsum is simply dummy text of the printing and typesetting
+        industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,
+        when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+        It has survived not only five centuries, but also the leap into electronic typesetting,
+        remaining essentially unchanged. It was popularised in the 1960s with the release of
+        Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
+        software like Aldus PageMaker including versions of Lorem Ipsum.</string>
+    <string name="text_sample_truncated">Lorem Ipsum is simply dummy text of the printing and typesetting
+        industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,
+        when an unknown printer took a galley of type and scrambled it to make a type specimen book.</string>
+    <string name="news_image">News image</string>
+    <string name="the_author">Arystan Telbay</string>
+    <string name="technology">Technology</string>
+    <string name="share_button">Share button</string>
+    <string name="time_example">5 minutes ago</string>
+    <string name="details_fragment">Details</string>
+    <string name="web_fragment">WebView</string>
+
+    <!-- Strings for the sections-->
+    <string name="world">World</string>
+    <string name="science">Science</string>
+    <string name="sport">Sport</string>
+    <string name="environment">Environment</string>
+    <string name="society">Society</string>
+    <string name="fashion">Fashion</string>
+    <string name="business">Business</string>
+    <string name="culture">Culture</string>
+    <string name="news">News</string>
+    <string name="title">Title</string>
+
+    <!--    String for the animations-->
+    <string name="image">image %s</string>
+    <string name="web_title">title %s</string>
+    <string name="author">author %s</string>
+    <string name="category">category %s</string>
+    <string name="description">description %s</string>
+    <string name="time">title %s</string>
+
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="check_your_internet">\nCheck your internet\n\nTap to Reload</string>
+    <string name="search">Search</string>
+    <string name="go_to_the_website">Go to the website</string>
+    <string name="share">Share</string>
+    <string name="filter">Filter</string>
+    <string name="page_title">Page title</string>
+
+    <string-array name="filter_by_date">
+        <item>Newest</item>
+        <item>Oldest</item>
+        <item>Relevance</item>
+    </string-array>
+</resources>

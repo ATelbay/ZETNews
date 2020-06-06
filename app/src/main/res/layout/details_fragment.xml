@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.detail.DetailsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/description_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp"
+            tools:text="@string/text_sample_truncated" />
+
+        <TextView
+            android:id="@+id/description_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding"
+            android:text="@string/time_example"
+            app:layout_constraintTop_toBottomOf="@id/description_title" />
+
+        <TextView
+            android:id="@+id/description_category"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toStartOf="@id/description_author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description_time"
+            tools:text="@string/technology" />
+
+        <TextView
+            android:id="@+id/description_author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:paddingHorizontal="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/description_category"
+            app:layout_constraintTop_toBottomOf="@id/description_time"
+            tools:text="@string/the_author" />
+
+
+        <ImageView
+            android:id="@+id/description_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/news_image"
+            android:paddingTop="@dimen/default_padding"
+            android:src="@drawable/burj_khalifa"
+            app:layout_constraintTop_toBottomOf="@id/description_author" />
+
+
+        <TextView
+            android:id="@+id/description_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintTop_toBottomOf="@id/description_image"
+            tools:text="@string/text_sample" />
+
+        <Button
+            android:id="@+id/details_website_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_padding"
+            android:layout_marginBottom="@dimen/default_padding"
+            android:text="@string/go_to_the_website"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description_description" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>
