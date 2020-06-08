@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".view.detail.DetailsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/details_constraint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -56,16 +58,24 @@
             tools:text="@string/the_author" />
 
 
-        <ImageView
-            android:id="@+id/description_image"
+        <FrameLayout
+            android:id="@+id/description_fl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/news_image"
-            android:paddingTop="@dimen/default_padding"
-            android:src="@drawable/burj_khalifa"
-            app:layout_constraintTop_toBottomOf="@id/description_author" />
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/default_padding"
+            app:layout_constraintTop_toBottomOf="@id/description_author">
 
+
+            <ImageView
+                android:id="@+id/description_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/news_image"
+                android:layout_marginTop="@dimen/default_padding"
+                android:src="@drawable/burj_khalifa"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/description_description"
@@ -74,7 +84,7 @@
             android:paddingHorizontal="@dimen/default_padding"
             android:paddingTop="@dimen/default_padding"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_constraintTop_toBottomOf="@id/description_image"
+            app:layout_constraintTop_toBottomOf="@id/description_fl"
             tools:text="@string/text_sample" />
 
         <Button

@@ -2,15 +2,17 @@ package com.smqpro.zetnews.util
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
+import android.util.DisplayMetrics
 import android.util.Log
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -44,6 +46,10 @@ fun Context.getDrawableCompat(@DrawableRes drawableRes: Int): Drawable? {
     return AppCompatResources.getDrawable(this, drawableRes)
 }
 
+fun Context.dpToPixels(dp: Float) =
+    dp * (resources
+        .displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+
 
 // Other extensions
 val Any.TAG: String
@@ -72,13 +78,14 @@ fun Any.htmlParse(str: String): String {
         Html.fromHtml(str).toString()
 }
 
+
 // Activities' extensions
 
 // ImageView extensions
 fun ImageView.load(
     url: String,
     loadOnlyFromCache: Boolean = false,
-    onLoadingFinished: () -> Unit = {}
+    onLoadingFinished: (px: Int) -> Unit = {}
 ) {
     val listener = object : RequestListener<Drawable> {
         override fun onLoadFailed(
@@ -87,7 +94,7 @@ fun ImageView.load(
             target: Target<Drawable>?,
             isFirstResource: Boolean
         ): Boolean {
-            onLoadingFinished()
+            onLoadingFinished(0)
             return false
         }
 
@@ -98,10 +105,12 @@ fun ImageView.load(
             dataSource: DataSource?,
             isFirstResource: Boolean
         ): Boolean {
-            onLoadingFinished()
+            Log.d(TAG, "onResourceReady: drawable height - ${resource?.intrinsicHeight}")
+            onLoadingFinished(resource?.intrinsicHeight ?: 0)
             return false
         }
     }
+
 
     val requestOptions = RequestOptions.placeholderOf(R.drawable.aaa)
         .dontTransform()

@@ -30,43 +30,48 @@ import kotlinx.coroutines.*
 class HomeFragment : Fragment(R.layout.fragment_home),
     HomeListAdapter.Interaction {
     private lateinit var homeAdapter: HomeListAdapter
-    private lateinit var homeViewModel: HomeViewModel
-    val args: HomeFragmentArgs by navArgs()
+    private lateinit var viewModel: HomeViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
         initRefreshLayout()
         val homeRepository = HomeRepository((activity as MainActivity).db)
-        homeViewModel = ViewModelProvider(this, HomeViewModelProviderFactory(homeRepository))
+        viewModel = ViewModelProvider(this, HomeViewModelProviderFactory(homeRepository))
             .get(HomeViewModel::class.java)
         setHasOptionsMenu(true)
         observeNews()
-
+        Log.d(TAG, "onViewCreated: $tag")
 
     }
 
+    fun scrollToTop() =
+        home_recycler.smoothScrollToPosition(0)
+
+
     private fun observeNews() {
 
-        homeViewModel.news.observe(viewLifecycleOwner, Observer { response ->
+        viewModel.news.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
-                    Log.d(TAG, "onViewCreated: Success - $response. Results - ${response.data}")
+                    Log.d(TAG, "observeNews: Success - $response. Results - ${response.data}")
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     response.data?.response?.results?.let {
-                        homeAdapter.submitList(it)
-                        Log.d(TAG, "onViewCreated: array size - ${it.size}")
+//                        homeAdapter.submitList(it)
+                        viewModel.cacheNews(it)
+                        Log.d(TAG, "observeNews: array size - ${it.size}")
                     }
+
                 }
                 is Resource.Error -> {
-                    Log.d(TAG, "onViewCreated: Error - ${response.message}")
+                    Log.d(TAG, "observeNews: Error - ${response.message}")
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show()
                 }
                 is Resource.Loading -> {
-                    Log.d(TAG, "onViewCreated: Loading...")
+                    Log.d(TAG, "observeNews: Loading...")
                 }
             }
         })
@@ -89,7 +94,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
-            homeViewModel.searchNews()
+            viewModel.searchNews()
         }
     }
 
@@ -100,7 +105,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
 
-        searchView.setQuery(homeViewModel.query, false)
+        searchView.setQuery(viewModel.query, false)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             var job: Job? = null
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -112,9 +117,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 job = MainScope().launch {
                     delay(SEARCH_DELAY)
                     query?.let {
-                        homeViewModel.query = it // TODO Hardcode
+                        viewModel.query = it // TODO Hardcode
                     }
-                    homeViewModel.searchNews()
+                    viewModel.searchNews()
                 }
                 return false
             }
@@ -134,11 +139,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                     builder.setTitle("Filter by date")
                         .setSingleChoiceItems(
                             R.array.filter_by_date,
-                            homeViewModel.filter
+                            viewModel.filter
                         ) { dialog, which ->
-                            if (homeViewModel.filter != which) {
-                                homeViewModel.filter = which
-                                homeViewModel.searchNews()
+                            if (viewModel.filter != which) {
+                                viewModel.filter = which
+                                viewModel.searchNews()
                                 dialog.dismiss()
                             }
                         }
@@ -187,5 +192,9 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         findNavController().navigate(destination)
     }
 
+    override fun onLikeSelected(item: Result) {
+        Log.d(TAG, "onLikeSelected: clicked")
+        viewModel.likeLikeNot(item)
+    }
 
 }

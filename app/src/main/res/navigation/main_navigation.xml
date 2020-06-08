@@ -15,7 +15,7 @@
         android:id="@+id/details_fragment"
         android:name="com.smqpro.zetnews.view.detail.DetailsFragment"
         android:label="@string/details_fragment"
-        tools:layout="@layout/details_fragment">
+        tools:layout="@layout/fragment_details">
         <argument
             android:name="result"
             app:argType="com.smqpro.zetnews.model.response.Result" />

@@ -10,10 +10,18 @@ interface NewsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(result: Result): Long
 
-    @Query("SELECT * FROM news")
-    fun selectAll(): LiveData<List<Result>>
+    @Query("SELECT * FROM news WHERE cache = 1")
+    fun selectCached(): LiveData<List<Result>>
+
+    @Query("SELECT * FROM news WHERE liked = 1 ORDER BY updatedAt DESC")
+    fun selectLiked(): LiveData<List<Result>>
 
     @Delete
     suspend fun deleteResult(result: Result)
 
+    @Query("DELETE FROM news WHERE liked=0 AND cache=1")
+    suspend fun deleteCachedNews()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertCachedNews(resultList: List<Result>)
 }

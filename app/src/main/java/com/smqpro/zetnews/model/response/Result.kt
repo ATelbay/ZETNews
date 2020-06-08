@@ -3,8 +3,10 @@ package com.smqpro.zetnews.model.response
 import androidx.room.*
 import com.smqpro.zetnews.model.db.Converters
 import java.io.Serializable
+import java.util.*
 
 @Entity(tableName = "news")
+
 data class Result(
     var apiUrl: String,
     @PrimaryKey
@@ -23,16 +25,23 @@ data class Result(
     val type: String,
     var webPublicationDate: String,
     var webTitle: String,
-    var webUrl: String
+    var webUrl: String,
+    var liked: Boolean,
+    var cache: Boolean
 ) : Serializable {
     constructor() : this(
         "", "", false, "", "",
         "", "", Field("", ""),
-        "", "", "", ""
+        "", "", "", "", false, false
     )
 
     @TypeConverters(Converters::class)
     var tags: MutableList<Tag> = mutableListOf()
+
+    @TypeConverters(Converters::class)
+    var createdAt: Date = Date(System.currentTimeMillis())
+    @TypeConverters(Converters::class)
+    var updatedAt: Date = Date(System.currentTimeMillis())
 
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) {
@@ -48,7 +57,8 @@ data class Result(
             fields.trailText != other.fields.trailText ||
             webPublicationDate != other.webPublicationDate ||
             webTitle != other.webTitle ||
-            webUrl != other.webUrl
+            webUrl != other.webUrl ||
+            liked != other.liked
         ) return false
 
         return true

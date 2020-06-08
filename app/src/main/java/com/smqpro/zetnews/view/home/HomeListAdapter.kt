@@ -117,6 +117,7 @@ class HomeListAdapter(private val interaction: Interaction? = null) :
         fun onItemSelected(position: Int, item: Result, itemView: View)
         fun onShareSelected(url: String)
         fun onLongItemSelected(item: Result)
+        fun onLikeSelected(item: Result)
     }
 }
 

@@ -1,15 +1,18 @@
 package com.smqpro.zetnews.view.home
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.smqpro.zetnews.model.RetrofitInstance
 import com.smqpro.zetnews.model.db.NewsDatabase
 import com.smqpro.zetnews.model.response.News
+import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
 import com.smqpro.zetnews.util.TAG
+import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class HomeRepository(
-    val db: NewsDatabase
+    private val db: NewsDatabase
 ) {
 
     suspend fun getNews(
@@ -24,14 +27,19 @@ class HomeRepository(
             order = order,
             section = category
         )
-//        response.body()?.response?.results?.filter {
-//            Log.d(
-//                TAG,
-//                "getNews: ${it.fields.thumbnail.isNotEmpty() && it.fields.trailText.isNotEmpty()}"
-//            )
-//            it.fields.thumbnail.isNotEmpty() && it.fields.trailText.isNotEmpty() // TODO doesn't filter any of the news without thumbnail & trailText
-//        }
         Log.d(TAG, "getNews: size - ${response.body()?.response?.results?.size}")
         return response
+    }
+
+    suspend fun upsertCachedNews(resultList: List<Result>) {
+        db.getNewsDao().deleteCachedNews()
+        db.getNewsDao().upsertCachedNews(resultList)
+    }
+
+    fun getCachedNews() = db.getNewsDao().selectCached()
+
+    suspend fun likeLikeNot(result: Result) {
+        result.liked = !result.liked
+        db.getNewsDao().upsert(result)
     }
 }
