@@ -1,19 +1,13 @@
 package com.smqpro.zetnews.view.home
 
-import android.content.Intent
-import android.os.Build
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.text.HtmlCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.smqpro.zetnews.BuildConfig
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.htmlParse
@@ -35,8 +29,8 @@ class HomeListAdapter(private val interaction: Interaction? = null) :
 
 
     }
-    private val differ = AsyncListDiffer(this, diffCallback)
 
+    private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -107,7 +101,6 @@ class HomeListAdapter(private val interaction: Interaction? = null) :
             news_share.setOnClickListener {
                 interaction?.onShareSelected(item.webUrl)
             }
-
 
 
         }

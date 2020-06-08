@@ -2,13 +2,11 @@ package com.smqpro.zetnews.util
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
 import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
@@ -63,7 +61,6 @@ fun Any.prettyTime(dateStr: String): String {
     try {
         val date = format.parse(dateStr)
         val prettyTime = PrettyTime(Locale.getDefault())
-        Log.d(TAG, "prettyTime: $prettyTime $date")
         return prettyTime.format(date)
     } catch (e: ParseException) {
         e.printStackTrace()
@@ -76,6 +73,15 @@ fun Any.htmlParse(str: String): String {
         Html.fromHtml(str, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
     else
         Html.fromHtml(str).toString()
+}
+
+fun Any.logE(tag: String?, msg: String?) {
+    val stackTrace = Exception().stackTrace[1]
+    var fileName = stackTrace.fileName
+    if (fileName == null) fileName = "" // It is necessary if you want to use proguard obfuscation.
+    val info = (stackTrace.methodName + " (" + fileName + ":"
+            + stackTrace.lineNumber + ")")
+    Log.e(tag, "$info: $msg")
 }
 
 

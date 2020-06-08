@@ -11,7 +11,7 @@ interface NewsDao {
     suspend fun upsert(result: Result): Long
 
     @Query("SELECT * FROM news WHERE cache = 1")
-    fun selectCached(): LiveData<List<Result>>
+    suspend fun selectCached(): List<Result>
 
     @Query("SELECT * FROM news WHERE liked = 1 ORDER BY updatedAt DESC")
     fun selectLiked(): LiveData<List<Result>>

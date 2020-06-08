@@ -1,6 +1,6 @@
 package com.smqpro.zetnews.util
 
-sealed class Resource<T>(
+sealed class Resource<T> constructor(
     val data: T? = null,
     val message: String? = null
 ) {

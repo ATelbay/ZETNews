@@ -1,6 +1,7 @@
 package com.smqpro.zetnews.model
 
 import com.smqpro.zetnews.model.response.News
+import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
 import retrofit2.Response
 import retrofit2.http.GET

@@ -14,14 +14,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.response.Result
+import com.smqpro.zetnews.util.*
 import com.smqpro.zetnews.util.Constants.Companion.SEARCH_DELAY
-import com.smqpro.zetnews.util.Resource
-import com.smqpro.zetnews.util.TAG
-import com.smqpro.zetnews.util.sendShareIntent
 import com.smqpro.zetnews.view.MainActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.news_item.view.*
@@ -37,40 +34,86 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         initRecycler()
         initRefreshLayout()
         val homeRepository = HomeRepository((activity as MainActivity).db)
-        viewModel = ViewModelProvider(this, HomeViewModelProviderFactory(homeRepository))
-            .get(HomeViewModel::class.java)
+        val application = (activity as MainActivity).application
+        viewModel =
+            ViewModelProvider(this, HomeViewModelProviderFactory(application, homeRepository))
+                .get(HomeViewModel::class.java)
         setHasOptionsMenu(true)
-        observeNews()
+        observeCachedNews()
         Log.d(TAG, "onViewCreated: $tag")
 
     }
 
-    fun scrollToTop() =
-        home_recycler.smoothScrollToPosition(0)
+    fun scrollToTop() = home_recycler.smoothScrollToPosition(0)
 
+    private fun observeCachedNews() {
+        viewModel.cachedNews.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
+                    observeNews()
+                    Log.d(TAG, "observeCachedNews: Success - $response. Results - ${response.data}")
+                    if (response.data != null) {
+                        viewModel.loadedNews.addAll(response.data)
+                        homeAdapter.submitList(response.data)
+                    } else {
+                        Log.d(TAG, "observeNews: Loading...")
+                        home_progress.visibility = View.GONE
+                        home_srl.isRefreshing = false
+                        Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+                is Resource.Error -> { // TODO handle error cases
+                    Log.e(
+                        TAG,
+                        "observeNews: Error - ${response.message}"
+                    )
+                    home_progress.visibility = View.GONE
+                    home_srl.isRefreshing = false
+                    Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
+                }
+                is Resource.Loading -> {
+                    home_progress.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
 
     private fun observeNews() {
-
+        viewModel.searchNews()
         viewModel.news.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
                     Log.d(TAG, "observeNews: Success - $response. Results - ${response.data}")
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
-                    response.data?.response?.results?.let {
-//                        homeAdapter.submitList(it)
-                        viewModel.cacheNews(it)
-                        Log.d(TAG, "observeNews: array size - ${it.size}")
+                    response.data?.let { news ->
+                        CoroutineScope(Dispatchers.Default).launch {
+                            if (news != viewModel.loadedNews as List<Result>) {
+                                viewModel.cacheNews(news)
+                                viewModel.loadedNews.addAll(news)
+                                withContext(Dispatchers.Main) {
+                                    homeAdapter.submitList(news)
+                                }
+                            } else {
+                                news.forEach {
+                                    it.cache = true
+                                }
+                            }
+                        }
+                        Log.d(TAG, "observeNews: array size - ${news.size}")
                     }
-
                 }
-                is Resource.Error -> {
-                    Log.d(TAG, "observeNews: Error - ${response.message}")
+                is Resource.Error -> { // TODO handle error cases
+                    if (viewModel.loadedNews.isEmpty()) {
+                        Toast.makeText(context, "Error. Try again later", Toast.LENGTH_SHORT).show()
+                    }
+                    logE(TAG, response.message)
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
-                    Toast.makeText(context, "Some error occurred", Toast.LENGTH_SHORT).show()
                 }
                 is Resource.Loading -> {
+                    home_progress.visibility = View.VISIBLE
                     Log.d(TAG, "observeNews: Loading...")
                 }
             }
@@ -94,6 +137,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
+            viewModel.loadedNews.clear()
             viewModel.searchNews()
         }
     }

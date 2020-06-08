@@ -36,7 +36,7 @@ class HomeRepository(
         db.getNewsDao().upsertCachedNews(resultList)
     }
 
-    fun getCachedNews() = db.getNewsDao().selectCached()
+    suspend fun getCachedNews() = db.getNewsDao().selectCached()
 
     suspend fun likeLikeNot(result: Result) {
         result.liked = !result.liked
