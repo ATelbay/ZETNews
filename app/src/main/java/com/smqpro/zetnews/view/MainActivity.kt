@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         when (item.itemId) {
             R.id.home_fragment -> {
                 Log.d(TAG, "onNavigationItemReselected: home clicked")
-                (main_host_fragment.childFragmentManager.fragments[0] as HomeFragment).scrollToTop()
+//                (main_host_fragment.childFragmentManager.fragments[0] as HomeFragment).scrollToTop()
             }
         }
     }

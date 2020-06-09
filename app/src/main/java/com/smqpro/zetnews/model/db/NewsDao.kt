@@ -10,7 +10,7 @@ interface NewsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(result: Result): Long
 
-    @Query("SELECT * FROM news WHERE cache = 1")
+    @Query("SELECT * FROM news WHERE cache = 1 ORDER BY webPublicationDate DESC")
     suspend fun selectCached(): List<Result>
 
     @Query("SELECT * FROM news WHERE liked = 1 ORDER BY updatedAt DESC")

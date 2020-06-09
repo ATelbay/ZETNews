@@ -35,7 +35,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     HomeListAdapter.Interaction {
     private lateinit var homeAdapter: HomeListAdapter
     private lateinit var viewModel: HomeViewModel
-    var firstInit = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         setHasOptionsMenu(true)
         initRefreshButton()
         if (savedInstanceState == null) {
-            observeCachedNews()
+            observeNews()
             observeNewNewsAvailability()
         }
 
@@ -69,39 +68,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         })
     }
 
-    private fun observeCachedNews() {
-        viewModel.cachedNews.observe(viewLifecycleOwner, Observer { response ->
-            when (response) {
-                is Resource.Success -> {
-                    Log.d(TAG, "ocn: Success - $response. Results - ${response.data}")
-                    if (response.data != null) {
-                        homeAdapter.submitList(response.data)
-                    } else {
-                        viewModel.searchNews()
-                    }
-                    home_progress.visibility = View.GONE
-                    home_srl.isRefreshing = false
-                }
-                is Resource.Error -> { // TODO handle error cases
-                    Log.e(
-                        TAG,
-                        "ocn: Error - ${response.message}"
-                    )
-                    home_progress.visibility = View.GONE
-                    home_srl.isRefreshing = false
-                    viewModel.searchNews()
-
-                }
-                is Resource.Loading -> {
-                    Log.d(TAG, "ocn: Loading...")
-                    home_refresh_button.isEnabled = false
-                    home_progress.visibility = View.VISIBLE
-                }
-            }
-            observeNews()
-        })
-    }
-
     private fun observeNews() {
         viewModel.news.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
@@ -110,8 +76,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     if (response.data != null) {
-                        viewModel.cacheNews(response.data)
-                        viewModel.newNewsAvailable(response.data)
                         homeAdapter.submitList(response.data)
                     } else {
                         Toast.makeText(
@@ -160,8 +124,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
             CoroutineScope(Dispatchers.Default).launch {
-                viewModel.searchNews()
+                viewModel.searchNews(false)
             }
+        }
+    }
+
+    private fun initRefreshButton(work: () -> Unit = {}) {
+        home_refresh_button.setOnClickListener {
+            hideRefreshButton()
+            viewModel.searchNews(false)
         }
     }
 
@@ -185,7 +156,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                     query?.let {
                         viewModel.query = it // TODO Hardcode
                     }
-                    viewModel.searchNews()
+                    Log.d(TAG, "onQueryTextChange: ")
+                    viewModel.searchNews(false)
                 }
                 return false
             }
@@ -209,7 +181,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         ) { dialog, which ->
                             if (viewModel.filter != which) {
                                 viewModel.filter = which
-                                viewModel.searchNews()
+                                Log.d(TAG, "onOptionsItemSelected: ")
+                                viewModel.searchNews(false)
                                 dialog.dismiss()
                             }
                         }
@@ -245,13 +218,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             }
         }
 
-    }
-
-    private fun initRefreshButton(work: () -> Unit = {}) {
-        home_refresh_button.setOnClickListener {
-            viewModel.searchNews()
-            hideRefreshButton()
-        }
     }
 
     private fun hideRefreshButton() {

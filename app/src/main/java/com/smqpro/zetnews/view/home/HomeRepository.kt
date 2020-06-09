@@ -32,11 +32,11 @@ class HomeRepository(
         return response
     }
 
-    suspend fun sameResults(resultList: List<Result>): Boolean {
+    suspend fun sameResults(resultList: List<Result>?): Boolean {
         val cachedNews = db.getNewsDao().selectCached()
         var returnCache = true
-        if (cachedNews.isNotEmpty() && resultList.isNotEmpty())
-            resultList.forEachIndexed { index, result ->
+        if (cachedNews.isNullOrEmpty() && resultList.isNullOrEmpty())
+            resultList?.forEachIndexed { index, result ->
                 if (result != cachedNews[index]) {
                     returnCache = false
                     return@forEachIndexed
