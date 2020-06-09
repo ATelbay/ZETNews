@@ -40,6 +40,7 @@ data class Result(
 
     @TypeConverters(Converters::class)
     var createdAt: Date = Date(System.currentTimeMillis())
+
     @TypeConverters(Converters::class)
     var updatedAt: Date = Date(System.currentTimeMillis())
 
@@ -51,14 +52,14 @@ data class Result(
         other as Result
 
         if (apiUrl != other.apiUrl ||
-            pillarId != other.pillarName ||
+            id != other.id ||
+            pillarName != other.pillarName ||
             sectionName != other.sectionName ||
-            fields.thumbnail != other.fields.thumbnail ||
-            fields.trailText != other.fields.trailText ||
             webPublicationDate != other.webPublicationDate ||
             webTitle != other.webTitle ||
             webUrl != other.webUrl ||
-            liked != other.liked
+            liked != other.liked ||
+            cache != other.cache
         ) return false
 
         return true
@@ -67,17 +68,13 @@ data class Result(
     override fun hashCode(): Int {
         var result = apiUrl.hashCode()
         result = 31 * result + id.hashCode()
-        result = 31 * result + isHosted.hashCode()
-        result = 31 * result + pillarId.hashCode()
         result = 31 * result + pillarName.hashCode()
-        result = 31 * result + sectionId.hashCode()
         result = 31 * result + sectionName.hashCode()
-        result = 31 * result + fields.hashCode()
-        result = 31 * result + type.hashCode()
         result = 31 * result + webPublicationDate.hashCode()
         result = 31 * result + webTitle.hashCode()
         result = 31 * result + webUrl.hashCode()
-        result = 31 * result + tags.hashCode()
+        result = 31 * result + liked.hashCode()
+        result = 31 * result + cache.hashCode()
         return result
     }
 }

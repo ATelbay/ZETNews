@@ -7,6 +7,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.TranslateAnimation
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -17,8 +21,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.response.Result
-import com.smqpro.zetnews.util.*
 import com.smqpro.zetnews.util.Constants.Companion.SEARCH_DELAY
+import com.smqpro.zetnews.util.Resource
+import com.smqpro.zetnews.util.TAG
+import com.smqpro.zetnews.util.logE
+import com.smqpro.zetnews.util.sendShareIntent
 import com.smqpro.zetnews.view.MainActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.news_item.view.*
@@ -28,6 +35,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     HomeListAdapter.Interaction {
     private lateinit var homeAdapter: HomeListAdapter
     private lateinit var viewModel: HomeViewModel
+    var firstInit = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,85 +44,99 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         val homeRepository = HomeRepository((activity as MainActivity).db)
         val application = (activity as MainActivity).application
         viewModel =
-            ViewModelProvider(this, HomeViewModelProviderFactory(application, homeRepository))
+            ViewModelProvider(
+                (activity as MainActivity),
+                HomeViewModelProviderFactory(application, homeRepository)
+            )
                 .get(HomeViewModel::class.java)
         setHasOptionsMenu(true)
-        observeCachedNews()
-        Log.d(TAG, "onViewCreated: $tag")
+        initRefreshButton()
+        if (savedInstanceState == null) {
+            observeCachedNews()
+            observeNewNewsAvailability()
+        }
 
     }
 
     fun scrollToTop() = home_recycler.smoothScrollToPosition(0)
 
-    private fun observeCachedNews() {
-        viewModel.cachedNews.observe(viewLifecycleOwner, Observer { response ->
-            when (response) {
-                is Resource.Success -> {
-                    observeNews()
-                    Log.d(TAG, "observeCachedNews: Success - $response. Results - ${response.data}")
-                    if (response.data != null) {
-                        viewModel.loadedNews.addAll(response.data)
-                        homeAdapter.submitList(response.data)
-                    } else {
-                        Log.d(TAG, "observeNews: Loading...")
-                        home_progress.visibility = View.GONE
-                        home_srl.isRefreshing = false
-                        Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
-                    }
-
-                }
-                is Resource.Error -> { // TODO handle error cases
-                    Log.e(
-                        TAG,
-                        "observeNews: Error - ${response.message}"
-                    )
-                    home_progress.visibility = View.GONE
-                    home_srl.isRefreshing = false
-                    Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
-                }
-                is Resource.Loading -> {
-                    home_progress.visibility = View.VISIBLE
-                }
+    private fun observeNewNewsAvailability() {
+        viewModel.newsAvailable.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observeNewNewsAvailability: $it")
+            if (it) {
+                showRefreshButton()
             }
         })
     }
 
+    private fun observeCachedNews() {
+        viewModel.cachedNews.observe(viewLifecycleOwner, Observer { response ->
+            when (response) {
+                is Resource.Success -> {
+                    Log.d(TAG, "ocn: Success - $response. Results - ${response.data}")
+                    if (response.data != null) {
+                        homeAdapter.submitList(response.data)
+                    } else {
+                        viewModel.searchNews()
+                    }
+                    home_progress.visibility = View.GONE
+                    home_srl.isRefreshing = false
+                }
+                is Resource.Error -> { // TODO handle error cases
+                    Log.e(
+                        TAG,
+                        "ocn: Error - ${response.message}"
+                    )
+                    home_progress.visibility = View.GONE
+                    home_srl.isRefreshing = false
+                    viewModel.searchNews()
+
+                }
+                is Resource.Loading -> {
+                    Log.d(TAG, "ocn: Loading...")
+                    home_refresh_button.isEnabled = false
+                    home_progress.visibility = View.VISIBLE
+                }
+            }
+            observeNews()
+        })
+    }
+
     private fun observeNews() {
-        viewModel.searchNews()
         viewModel.news.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
-                    Log.d(TAG, "observeNews: Success - $response. Results - ${response.data}")
+                    Log.d(TAG, "on: Success - $response. Results - ${response.data}")
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
-                    response.data?.let { news ->
-                        CoroutineScope(Dispatchers.Default).launch {
-                            if (news != viewModel.loadedNews as List<Result>) {
-                                viewModel.cacheNews(news)
-                                viewModel.loadedNews.addAll(news)
-                                withContext(Dispatchers.Main) {
-                                    homeAdapter.submitList(news)
-                                }
-                            } else {
-                                news.forEach {
-                                    it.cache = true
-                                }
-                            }
-                        }
-                        Log.d(TAG, "observeNews: array size - ${news.size}")
+                    if (response.data != null) {
+                        viewModel.cacheNews(response.data)
+                        viewModel.newNewsAvailable(response.data)
+                        homeAdapter.submitList(response.data)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Something went wrong. Try again later. observeNews().Success.else",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 is Resource.Error -> { // TODO handle error cases
-                    if (viewModel.loadedNews.isEmpty()) {
-                        Toast.makeText(context, "Error. Try again later", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(
+                        context,
+                        "Something went wrong. Try again later. observeNews().Error",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                     logE(TAG, response.message)
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
+
                 }
                 is Resource.Loading -> {
                     home_progress.visibility = View.VISIBLE
-                    Log.d(TAG, "observeNews: Loading...")
+                    home_refresh_button.isEnabled = false
+                    Log.d(TAG, "on: Loading...")
                 }
             }
         })
@@ -137,14 +159,14 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
-            viewModel.loadedNews.clear()
-            viewModel.searchNews()
+            CoroutineScope(Dispatchers.Default).launch {
+                viewModel.searchNews()
+            }
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu.clear()
         inflater.inflate(R.menu.home_menu, menu)
 
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
@@ -223,6 +245,57 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             }
         }
 
+    }
+
+    private fun initRefreshButton(work: () -> Unit = {}) {
+        home_refresh_button.setOnClickListener {
+            viewModel.searchNews()
+            hideRefreshButton()
+        }
+    }
+
+    private fun hideRefreshButton() {
+        val transAnim = TranslateAnimation(0F, 0F, 0F, -400F)
+        transAnim.duration = 500
+        val alphaAnim = AlphaAnimation(1F, 0F)
+        alphaAnim.duration = 500
+        val animSet = AnimationSet(true)
+        animSet.addAnimation(transAnim)
+        animSet.addAnimation(alphaAnim)
+        animSet.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) {
+                home_refresh_button.visibility = View.GONE
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+                home_refresh_button.visibility = View.VISIBLE
+            }
+        })
+        home_refresh_button.startAnimation(animSet)
+    }
+
+    private fun showRefreshButton() {
+        home_refresh_button.isEnabled = true
+        val transAnim = TranslateAnimation(0F, 0F, -400F, 0F)
+        transAnim.duration = 500
+        val alphaAnim = AlphaAnimation(0F, 1F)
+        alphaAnim.duration = 500
+        val animSet = AnimationSet(true)
+        animSet.addAnimation(transAnim)
+        animSet.addAnimation(alphaAnim)
+        animSet.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) {
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+                home_refresh_button.visibility = View.VISIBLE
+            }
+        })
+        home_refresh_button.startAnimation(animSet)
     }
 
     override fun onShareSelected(url: String) {

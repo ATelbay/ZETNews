@@ -1,14 +1,12 @@
 package com.smqpro.zetnews.view.home
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.smqpro.zetnews.model.RetrofitInstance
 import com.smqpro.zetnews.model.db.NewsDatabase
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
 import com.smqpro.zetnews.util.TAG
-import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class HomeRepository(
@@ -27,8 +25,25 @@ class HomeRepository(
             order = order,
             section = category
         )
+        response.body()?.response?.results?.forEach {
+            it.cache = true
+        }
         Log.d(TAG, "getNews: size - ${response.body()?.response?.results?.size}")
         return response
+    }
+
+    suspend fun sameResults(resultList: List<Result>): Boolean {
+        val cachedNews = db.getNewsDao().selectCached()
+        var returnCache = true
+        if (cachedNews.isNotEmpty() && resultList.isNotEmpty())
+            resultList.forEachIndexed { index, result ->
+                if (result != cachedNews[index]) {
+                    returnCache = false
+                    return@forEachIndexed
+                }
+            } else returnCache = true
+        Log.d(TAG, "sameResults: $returnCache")
+        return returnCache
     }
 
     suspend fun upsertCachedNews(resultList: List<Result>) {

@@ -16,7 +16,6 @@ import com.smqpro.zetnews.util.Constants
 import com.smqpro.zetnews.util.Resource
 import com.smqpro.zetnews.util.TAG
 import com.smqpro.zetnews.view.NewsApplication
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
@@ -27,15 +26,21 @@ class HomeViewModel(
 ) : AndroidViewModel(app) {
     val cachedNews = MutableLiveData<Resource<List<Result>>>()
     val news = MutableLiveData<Resource<List<Result>>>()
+    val newsAvailable = MutableLiveData<Boolean>()
     var searchPage = 1
     var query = ""
     var section: String? = null
-    val loadedNews = mutableListOf<Result>()
 
     var filter = 0
 
     init {
         fetchCachedNews()
+    }
+
+    fun newNewsAvailable(resultList: List<Result>) = viewModelScope.launch {
+        if (repository.sameResults(resultList)) {
+            newsAvailable.postValue(false)
+        } else newsAvailable.postValue(true)
     }
 
     fun fetchCachedNews() = viewModelScope.launch {
