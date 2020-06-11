@@ -7,9 +7,7 @@ import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
@@ -25,19 +23,64 @@ class HomeViewModel(
     private val repository: HomeRepository
 ) : AndroidViewModel(app) {
     val news = MutableLiveData<Resource<List<Result>>>()
-    val newsAvailable = MutableLiveData<Boolean>()
+
+    //    val newsAvailable = MutableLiveData<Boolean>()
     var searchPage = 1
     var query = ""
     var section: String? = null
 
     var filter = 0
 
-    init {
-        searchNews(true)
-        newNewsAvailable()
+//    private fun newNewsAvailable() = viewModelScope.launch {
+//        try {
+//            if (hasInternetConnection()) {
+//                val order = when (filter) {
+//                    0 -> Constants.ORDER.NEWEST
+//                    1 -> Constants.ORDER.OLDEST
+//                    2 -> Constants.ORDER.RELEVANCE
+//                    else -> Constants.ORDER.NEWEST
+//                }
+//                val response =
+//                    repository.getNews(
+//                        searchQuery = query,
+//                        newsPage = searchPage,
+//                        order = order,
+//                        category = section
+//                    )
+//                if (repository.sameResults(response.body()?.response?.results)) {
+//                    newsAvailable.postValue(false)
+//                } else newsAvailable.postValue(true)
+//            }
+//        } catch (t: Throwable) {
+//            when (t) {
+//                is IOException -> news.postValue(Resource.Error("Failed to connect to the server"))
+//                else -> news.postValue(Resource.Error("Error fetching the data"))
+//            }
+//        }
+//
+//    }
+
+    val cachedNews = Transformations.map(repository.getCachedNews()) {
+        if (it.isNullOrEmpty()) {
+            getUpdatedNews()
+            Resource.Error<List<Result>>("No cached data. Trying to fetch the data from the network...")
+        } else {
+            Resource.Success<List<Result>>(it)
+        }
+    } as LiveData<Resource<List<Result>>>
+
+    private fun cacheNews(resultList: List<Result>) = viewModelScope.launch {
+        Log.d(TAG, "cacheNews: upsert list size - ${resultList.size}")
+        resultList.forEach {
+            it.cache = true
+        }
+        repository.updateCachedNews(resultList)
     }
 
-    private fun newNewsAvailable() = viewModelScope.launch {
+    fun getUpdatedNews() = viewModelScope.launch {
+        searchPage = 1
+        news.postValue(Resource.Loading())
+        Log.d(TAG, "searchNews: getting news from the network")
         try {
             if (hasInternetConnection()) {
                 val order = when (filter) {
@@ -53,9 +96,9 @@ class HomeViewModel(
                         order = order,
                         category = section
                     )
-                if (repository.sameResults(response.body()?.response?.results)) {
-                    newsAvailable.postValue(false)
-                } else newsAvailable.postValue(true)
+                handleNewsResponse(response)
+            } else {
+                news.postValue(Resource.Error("No internet connection"))
             }
         } catch (t: Throwable) {
             when (t) {
@@ -64,58 +107,6 @@ class HomeViewModel(
             }
         }
 
-    }
-
-    private fun cacheNews(resultList: List<Result>) = viewModelScope.launch {
-        Log.d(TAG, "cacheNews: upsert list size - ${resultList.size}")
-        resultList.forEach {
-            it.cache = true
-        }
-        repository.upsertCachedNews(resultList)
-    }
-
-    fun searchNews(getCachedNews: Boolean) = viewModelScope.launch {
-        searchPage = 1
-        news.postValue(Resource.Loading())
-        if (getCachedNews) {
-            Log.d(TAG, "searchNews: getting news from the cache")
-            if (repository.getCachedNews().isNotEmpty()) {
-                news.postValue(Resource.Success(repository.getCachedNews()))
-            } else {
-                news.postValue(Resource.Error("No cached data"))
-            }
-        } else {
-            Log.d(TAG, "searchNews: getting news from the network")
-            try {
-                if (hasInternetConnection()) {
-                    val order = when (filter) {
-                        0 -> Constants.ORDER.NEWEST
-                        1 -> Constants.ORDER.OLDEST
-                        2 -> Constants.ORDER.RELEVANCE
-                        else -> Constants.ORDER.NEWEST
-                    }
-                    val response =
-                        repository.getNews(
-                            searchQuery = query,
-                            newsPage = searchPage,
-                            order = order,
-                            category = section
-                        )
-                    news.postValue(handleNewsResponse(response))
-                } else {
-                    news.postValue(Resource.Error("No internet connection"))
-                }
-            } catch (t: Throwable) {
-                when (t) {
-                    is IOException -> news.postValue(Resource.Error("Failed to connect to the server"))
-                    else -> news.postValue(Resource.Error("Error fetching the data"))
-                }
-            }
-        }
-    }
-
-    fun likeLikeNot(result: Result) = viewModelScope.launch {
-        repository.likeLikeNot(result)
     }
 
     private fun handleNewsResponse(response: Response<News>): Resource<List<Result>> {

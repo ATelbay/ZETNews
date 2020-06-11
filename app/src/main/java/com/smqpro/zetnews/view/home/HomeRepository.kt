@@ -32,29 +32,10 @@ class HomeRepository(
         return response
     }
 
-    suspend fun sameResults(resultList: List<Result>?): Boolean {
-        val cachedNews = db.getNewsDao().selectCached()
-        var returnCache = true
-        if (cachedNews.isNullOrEmpty() && resultList.isNullOrEmpty())
-            resultList?.forEachIndexed { index, result ->
-                if (result != cachedNews[index]) {
-                    returnCache = false
-                    return@forEachIndexed
-                }
-            } else returnCache = true
-        Log.d(TAG, "sameResults: $returnCache")
-        return returnCache
+    suspend fun updateCachedNews(resultList: List<Result>) {
+        db.getNewsDao().updateCachedNews(resultList)
     }
 
-    suspend fun upsertCachedNews(resultList: List<Result>) {
-        db.getNewsDao().deleteCachedNews()
-        db.getNewsDao().upsertCachedNews(resultList)
-    }
+    fun getCachedNews() = db.getNewsDao().selectCached()
 
-    suspend fun getCachedNews() = db.getNewsDao().selectCached()
-
-    suspend fun likeLikeNot(result: Result) {
-        result.liked = !result.liked
-        db.getNewsDao().upsert(result)
-    }
 }

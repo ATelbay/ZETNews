@@ -24,7 +24,6 @@ import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants.Companion.SEARCH_DELAY
 import com.smqpro.zetnews.util.Resource
 import com.smqpro.zetnews.util.TAG
-import com.smqpro.zetnews.util.logE
 import com.smqpro.zetnews.util.sendShareIntent
 import com.smqpro.zetnews.view.MainActivity
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -43,20 +42,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         initViewModel()
         setHasOptionsMenu(true)
         initRefreshButton()
-        observeNews()
-        observeNewNewsAvailability()
+        observeCachedNews()
+        observeUpdatedNews()
     }
 
     fun scrollToTop() = home_recycler.smoothScrollToPosition(0)
-
-    private fun observeNewNewsAvailability() {
-        viewModel.newsAvailable.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observeNewNewsAvailability: $it")
-            if (it) {
-                showRefreshButton()
-            }
-        })
-    }
 
     private fun initViewModel() {
         val repository = HomeRepository((activity as MainActivity).db)
@@ -68,44 +58,74 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             .get(HomeViewModel::class.java)
     }
 
-    private fun observeNews() {
-        viewModel.news.observe(viewLifecycleOwner, Observer { response ->
-            when (response) {
-                is Resource.Success -> {
-                    Log.d(TAG, "on: Success - $response. Results - ${response.data}")
-                    home_progress.visibility = View.GONE
-                    home_srl.isRefreshing = false
-                    if (response.data != null) {
-                        homeAdapter.submitList(response.data)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Something went wrong. Try again later. observeNews().Success.else",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-                is Resource.Error -> { // TODO handle error cases
-                    Toast.makeText(
-                        context,
-                        "Something went wrong. Try again later. observeNews().Error",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    logE(TAG, response.message)
-                    home_progress.visibility = View.GONE
-                    home_srl.isRefreshing = false
+//    private fun observeNews() {
+//        viewModel.news.observe(viewLifecycleOwner, Observer {
+//            when (it) {
+//                is Resource.Success -> {
+//                    Log.d(TAG, "on: Success - $it. Results - ${it.data}")
+//                    home_progress.visibility = View.GONE
+//                    home_srl.isRefreshing = false
+//                    if (it.data != null) {
+//                        homeAdapter.submitList(it.data)
+//                    } else {
+//                        Toast.makeText(
+//                            context,
+//                            "Something went wrong. Try again later. observeNews().Success.else",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//                is Resource.Error -> { // TODO handle error cases
+//                    Toast.makeText(
+//                        context,
+//                        "Something went wrong. Try again later. observeNews().Error",
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                    logE(TAG, it.message)
+//                    home_progress.visibility = View.GONE
+//                    home_srl.isRefreshing = false
+//
+//                }
+//                is Resource.Loading -> {
+//                    home_progress.visibility = View.VISIBLE
+//                    home_refresh_button.isEnabled = false
+//                    Log.d(TAG, "on: Loading...")
+//                }
+//            }
+//        })
+//    }
 
+    private fun observeCachedNews() {
+        viewModel.cachedNews.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is Resource.Success -> {
+                    home_progress.visibility = View.GONE
+                    home_srl.isRefreshing = false
+                    homeAdapter.submitList(it.data ?: listOf())
                 }
-                is Resource.Loading -> {
-                    home_progress.visibility = View.VISIBLE
-                    home_refresh_button.isEnabled = false
-                    Log.d(TAG, "on: Loading...")
+                is Resource.Error -> {
+                    Log.d(TAG, "observeCachedNews: ${it.message}")
                 }
             }
         })
     }
 
+    private fun observeUpdatedNews() {
+        viewModel.news.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is Resource.Error -> {
+                    home_progress.visibility = View.GONE
+                    home_srl.isRefreshing = false
+                    Toast.makeText(
+                        context,
+                        "Something went wrong. Try again later",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        })
+    }
 
     private fun initRecycler() {
         homeAdapter = HomeListAdapter(this)
@@ -123,15 +143,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),
     private fun initRefreshLayout() {
         home_srl.setOnRefreshListener {
             CoroutineScope(Dispatchers.Default).launch {
-                viewModel.searchNews(false)
+                viewModel.getUpdatedNews()
             }
         }
     }
 
-    private fun initRefreshButton(work: () -> Unit = {}) {
+    private fun initRefreshButton() {
         home_refresh_button.setOnClickListener {
             hideRefreshButton()
-            viewModel.searchNews(false)
+            viewModel.getUpdatedNews()
         }
     }
 
@@ -156,7 +176,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         viewModel.query = it // TODO Hardcode
                     }
                     Log.d(TAG, "onQueryTextChange: ")
-                    viewModel.searchNews(false)
+                    viewModel.getUpdatedNews()
                 }
                 return false
             }
@@ -181,7 +201,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                             if (viewModel.filter != which) {
                                 viewModel.filter = which
                                 Log.d(TAG, "onOptionsItemSelected: ")
-                                viewModel.searchNews(false)
+                                viewModel.getUpdatedNews()
                                 dialog.dismiss()
                             }
                         }

@@ -84,7 +84,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         "image's height - ${description_image.height}"
             )
             description_title.text = webTitle
-            description_description.text = htmlParse(fields.trailText + getString(R.string.text_sample))
+            description_description.text = htmlParse(fields.trailText)
             Html.fromHtml(fields.trailText).toString()
 
             description_author.text = if (tags.isNotEmpty()) tags[0].webTitle else ""

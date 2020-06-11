@@ -115,7 +115,6 @@ fun ImageView.load(
             dataSource: DataSource?,
             isFirstResource: Boolean
         ): Boolean {
-            Log.d(TAG, "onResourceReady: drawable height - ${resource?.intrinsicHeight}")
             onLoadingFinished(resource?.intrinsicHeight ?: 0)
             return false
         }

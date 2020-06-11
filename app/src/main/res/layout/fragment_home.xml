@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/home_srl"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_srl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,50 +15,47 @@
             android:id="@+id/home_refresh_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="24dp"
+            android:backgroundTint="@color/dark_background"
             android:drawableStart="@drawable/ic_arrow_upward"
             android:text="@string/resfresh"
             android:textSize="12sp"
-            android:backgroundTint="@color/dark_background"/>
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-        <ProgressBar
-            android:id="@+id/home_progress"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/home_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".view.home.HomeFragment"
+            tools:listitem="@layout/news_item" />
+
+        <TextView
+            android:id="@+id/home_retry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintVertical_bias=".2"
+            android:drawableTop="@drawable/ic_no_connection"
+            android:text="@string/check_your_internet"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ViewSwitcher
-            android:id="@+id/home_switcher"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/home_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".view.home.HomeFragment"
-                tools:listitem="@layout/news_item" />
-
-            <TextView
-                android:id="@+id/home_retry"
-                style="@style/TextAppearance.AppCompat.Body2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:drawableTop="@drawable/ic_no_connection"
-                android:text="@string/check_your_internet"
-                android:textAlignment="center" />
-
-        </ViewSwitcher>
+        <ProgressBar
+            android:id="@+id/home_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
