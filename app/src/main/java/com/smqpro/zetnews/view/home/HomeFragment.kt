@@ -40,21 +40,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
         initRefreshLayout()
-        val homeRepository = HomeRepository((activity as MainActivity).db)
-        val application = (activity as MainActivity).application
-        viewModel =
-            ViewModelProvider(
-                (activity as MainActivity),
-                HomeViewModelProviderFactory(application, homeRepository)
-            )
-                .get(HomeViewModel::class.java)
+        initViewModel()
         setHasOptionsMenu(true)
         initRefreshButton()
-        if (savedInstanceState == null) {
-            observeNews()
-            observeNewNewsAvailability()
-        }
-
+        observeNews()
+        observeNewNewsAvailability()
     }
 
     fun scrollToTop() = home_recycler.smoothScrollToPosition(0)
@@ -66,6 +56,16 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 showRefreshButton()
             }
         })
+    }
+
+    private fun initViewModel() {
+        val repository = HomeRepository((activity as MainActivity).db)
+        val application = (activity as MainActivity).application
+        viewModel = ViewModelProvider(
+            (activity as MainActivity),
+            HomeViewModelProviderFactory(application, repository)
+        )
+            .get(HomeViewModel::class.java)
     }
 
     private fun observeNews() {
@@ -118,7 +118,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                 true
             }
         }
-
     }
 
     private fun initRefreshLayout() {
@@ -202,7 +201,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         CoroutineScope(Dispatchers.Default).launch {
             Log.d(TAG, "onItemSelected: item on the $position clicked")
             val author = if (item.tags.isNotEmpty()) item.tags[0].webTitle else ""
-
             val extras = FragmentNavigatorExtras(
                 itemView.news_image to item.fields.thumbnail,
                 itemView.news_title to item.webTitle,
@@ -273,11 +271,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         val destination = HomeFragmentDirections.toWebFragment(item)
 
         findNavController().navigate(destination)
-    }
-
-    override fun onLikeSelected(item: Result) {
-        Log.d(TAG, "onLikeSelected: clicked")
-        viewModel.likeLikeNot(item)
     }
 
 }

@@ -11,7 +11,6 @@ class HomeViewModelProviderFactory(
     private val repository: HomeRepository
 ) :
     ViewModelProvider.Factory {
-
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return HomeViewModel(app, repository) as T
     }

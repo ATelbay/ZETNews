@@ -52,6 +52,7 @@
     <string name="page_title">Page title</string>
     <string name="liked_news">Liked news</string>
     <string name="resfresh">Resfresh</string>
+    <string name="saved_news">Your saved news will be displayed here</string>
 
     <string-array name="filter_by_date">
         <item>Newest</item>

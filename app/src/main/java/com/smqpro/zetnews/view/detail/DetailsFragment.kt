@@ -1,5 +1,6 @@
 package com.smqpro.zetnews.view.detail
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -7,18 +8,22 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils.loadAnimation
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.util.*
+import com.smqpro.zetnews.view.MainActivity
 import com.viven.imagezoom.ImageZoomHelper
 import kotlinx.android.synthetic.main.fragment_details.*
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
     private val args: DetailsFragmentArgs by navArgs()
+    private lateinit var viewModel: DetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +38,24 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
+        initViewModel()
+        setTransitionNames()
+        setNews()
+        initFab()
+    }
+
+    private fun initViewModel() {
+        val repository = DetailsRepository((activity as MainActivity).db)
+        viewModel =
+            ViewModelProvider(
+                (activity as MainActivity),
+                DetailsViewModelProviderFactory(repository)
+            )
+                .get(DetailsViewModel::class.java)
+    }
+
+    private fun setTransitionNames() {
         args.result.apply {
             val author = if (tags.isNotEmpty()) tags[0].webTitle else ""
             ViewCompat.setTransitionName(description_title, webTitle)
@@ -46,11 +67,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             initButton()
             ImageZoomHelper.setViewZoomable(description_image)
         }
-
-        setNews()
-
     }
-
 
     private fun setNews() =
         args.result.apply {
@@ -67,7 +84,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         "image's height - ${description_image.height}"
             )
             description_title.text = webTitle
-            description_description.text = htmlParse(fields.trailText)
+            description_description.text = htmlParse(fields.trailText + getString(R.string.text_sample))
             Html.fromHtml(fields.trailText).toString()
 
             description_author.text = if (tags.isNotEmpty()) tags[0].webTitle else ""
@@ -80,6 +97,28 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         details_website_button.setOnClickListener {
             val destination = DetailsFragmentDirections.toWebFragment(args.result)
             findNavController().navigate(destination)
+        }
+    }
+
+    private fun initFab() {
+        val anim = loadAnimation(context, R.anim.rotate)
+        val animDislike = ObjectAnimator.ofFloat(details_fab, "rotation", 0F, 225F)
+        val animLike = ObjectAnimator.ofFloat(details_fab, "rotation", 225F, 0F)
+        anim.fillAfter = true
+        if (args.result.liked) {
+            animDislike.start()
+        }
+        details_fab.setOnClickListener {
+            if (args.result.liked) {
+                args.result.liked = false
+                viewModel.upsertNews(args.result)
+                animLike.start()
+            } else {
+                args.result.liked = true
+                viewModel.upsertNews(args.result)
+                animDislike.start()
+            }
+            Log.d(TAG, "initFab: news liked - ${args.result.liked}")
         }
     }
 

@@ -1,15 +1,15 @@
-package com.smqpro.zetnews.view.liked
+package com.smqpro.zetnews.view.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.smqpro.zetnews.model.response.Result
 import kotlinx.coroutines.launch
+import java.util.*
 
-class LikedViewModel(private val repository: LikedRepository) : ViewModel() {
+class DetailsViewModel(private val repository: DetailsRepository) : ViewModel() {
 
     fun upsertNews(result: Result) = viewModelScope.launch {
-        repository.upsertNews(result)
+        result.updatedAt = Date()
+        repository.upsert(result)
     }
-
-    fun getLikedNews() = repository.getLikedNews()
 }

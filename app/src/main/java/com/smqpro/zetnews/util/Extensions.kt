@@ -1,14 +1,18 @@
 package com.smqpro.zetnews.util
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
@@ -87,7 +91,7 @@ fun Any.logE(tag: String?, msg: String?) {
 
 // Activities' extensions
 
-// ImageView extensions
+// View extensions
 fun ImageView.load(
     url: String,
     loadOnlyFromCache: Boolean = false,
@@ -127,5 +131,37 @@ fun ImageView.load(
         .listener(listener)
         .into(this)
 
+}
+
+fun View.setColorAnimated(toColor: Int) {
+    val from = FloatArray(3)
+    val to = FloatArray(3)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        Color.colorToHSV(this.solidColor, from)
+        Color.colorToHSV(context.getColor(toColor), to)
+    } else {
+        Color.colorToHSV(this.solidColor, from)
+        Color.colorToHSV(resources.getColor(toColor), to)
+    }
+
+    Color.colorToHSV(Color.parseColor("#FFFF0000"), to)
+
+
+    val anim: ValueAnimator = ValueAnimator.ofFloat(0F, 1F) // animate from 0 to 1
+
+    anim.duration = 300 // for 300 ms
+
+
+    val hsv = FloatArray(3) // transition color
+
+    anim.addUpdateListener { animation -> // Transition along each axis of HSV (hue, saturation, value)
+        hsv[0] = from[0] + (to[0] - from[0]) * animation.animatedFraction
+        hsv[1] = from[1] + (to[1] - from[1]) * animation.animatedFraction
+        hsv[2] = from[2] + (to[2] - from[2]) * animation.animatedFraction
+        this.setBackgroundColor(Color.HSVToColor(hsv))
+    }
+
+    anim.start()
 }
 
