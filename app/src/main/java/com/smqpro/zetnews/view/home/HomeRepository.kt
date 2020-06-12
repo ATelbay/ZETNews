@@ -3,6 +3,7 @@ package com.smqpro.zetnews.view.home
 import android.util.Log
 import com.smqpro.zetnews.model.RetrofitInstance
 import com.smqpro.zetnews.model.db.NewsDatabase
+import com.smqpro.zetnews.model.response.CurrentPage
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
@@ -33,9 +34,18 @@ class HomeRepository(
     }
 
     suspend fun updateCachedNews(resultList: List<Result>) {
-        db.getNewsDao().updateCachedNews(resultList)
+        db.getNewsDao().resetCachedNews(resultList)
+    }
+
+    suspend fun insertCachedNews(resultList: List<Result>) {
+        db.getNewsDao().insertNewsList(resultList)
     }
 
     fun getCachedNews() = db.getNewsDao().selectCached()
+
+    suspend fun getCurrentPage() = db.getNewsDao().getCurrentPage()
+
+    suspend fun upsertCurrentPage(currentPage: CurrentPage) =
+        db.getNewsDao().upsertCurrentPage(currentPage)
 
 }

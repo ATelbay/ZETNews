@@ -17,10 +17,14 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.db.NewsDatabase
+import com.smqpro.zetnews.model.response.CurrentPage
 import com.smqpro.zetnews.view.home.HomeFragment
 import com.viven.imagezoom.ImageZoomHelper
 import com.smqpro.zetnews.util.TAG
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
     BottomNavigationView.OnNavigationItemReselectedListener {
@@ -84,10 +88,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         return super.onCreateOptionsMenu(menu)
     }
 
-    interface Callback {
-        fun category()
-    }
-
     override fun onNavigationItemReselected(item: MenuItem) {
         when (item.itemId) {
             R.id.home_fragment -> {
@@ -97,6 +97,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         }
     }
 
+    override fun onDestroy() {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.getNewsDao().truncateCache()
+            db.getNewsDao().upsertCurrentPage(CurrentPage(0, 2))
+        }
+        super.onDestroy()
+    }
 
 //    override fun onTouchEvent(event: MotionEvent): Boolean {
 //

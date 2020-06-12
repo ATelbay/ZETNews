@@ -79,10 +79,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 }
             }
             description_fl.minimumHeight = description_image.height
-            Log.d(
-                TAG, "setNews: fl's min height - ${description_fl.minimumHeight},\n" +
-                        "image's height - ${description_image.height}"
-            )
             description_title.text = webTitle
             description_description.text = htmlParse(fields.trailText)
             Html.fromHtml(fields.trailText).toString()
@@ -101,10 +97,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     }
 
     private fun initFab() {
-        val anim = loadAnimation(context, R.anim.rotate)
         val animDislike = ObjectAnimator.ofFloat(details_fab, "rotation", 0F, 225F)
         val animLike = ObjectAnimator.ofFloat(details_fab, "rotation", 225F, 0F)
-        anim.fillAfter = true
         if (args.result.liked) {
             animDislike.start()
         }

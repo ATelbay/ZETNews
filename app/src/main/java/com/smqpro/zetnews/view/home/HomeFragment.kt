@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants.Companion.SEARCH_DELAY
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.news_item.view.*
 import kotlinx.coroutines.*
 
+
 class HomeFragment : Fragment(R.layout.fragment_home),
     HomeListAdapter.Interaction {
     private lateinit var homeAdapter: HomeListAdapter
@@ -37,11 +39,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecycler()
         initRefreshLayout()
         initViewModel()
         setHasOptionsMenu(true)
         initRefreshButton()
+        initRecycler()
         observeCachedNews()
         observeUpdatedNews()
     }
@@ -58,51 +60,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             .get(HomeViewModel::class.java)
     }
 
-//    private fun observeNews() {
-//        viewModel.news.observe(viewLifecycleOwner, Observer {
-//            when (it) {
-//                is Resource.Success -> {
-//                    Log.d(TAG, "on: Success - $it. Results - ${it.data}")
-//                    home_progress.visibility = View.GONE
-//                    home_srl.isRefreshing = false
-//                    if (it.data != null) {
-//                        homeAdapter.submitList(it.data)
-//                    } else {
-//                        Toast.makeText(
-//                            context,
-//                            "Something went wrong. Try again later. observeNews().Success.else",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//                is Resource.Error -> { // TODO handle error cases
-//                    Toast.makeText(
-//                        context,
-//                        "Something went wrong. Try again later. observeNews().Error",
-//                        Toast.LENGTH_SHORT
-//                    )
-//                        .show()
-//                    logE(TAG, it.message)
-//                    home_progress.visibility = View.GONE
-//                    home_srl.isRefreshing = false
-//
-//                }
-//                is Resource.Loading -> {
-//                    home_progress.visibility = View.VISIBLE
-//                    home_refresh_button.isEnabled = false
-//                    Log.d(TAG, "on: Loading...")
-//                }
-//            }
-//        })
-//    }
-
     private fun observeCachedNews() {
         viewModel.cachedNews.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is Resource.Success -> {
+                    home_content_progress.visibility = View.GONE
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     homeAdapter.submitList(it.data ?: listOf())
+                    Log.d(TAG, "observeCachedNews: data size - ${it.data?.size}")
                 }
                 is Resource.Error -> {
                     Log.d(TAG, "observeCachedNews: ${it.message}")
@@ -115,6 +81,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
         viewModel.news.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is Resource.Error -> {
+                    home_content_progress.visibility = View.GONE
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     Toast.makeText(
@@ -129,9 +96,23 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     private fun initRecycler() {
         homeAdapter = HomeListAdapter(this)
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.d(TAG, "onScrollStateChanged: triggered")
+                    if (viewModel.searchPage <= viewModel.pages) {
+                        viewModel.getUpdatedNews(false)
+                        home_content_progress.visibility = View.VISIBLE
+                        Log.d(TAG, "onScrollStateChanged: current page - ${viewModel.searchPage}")
+                    }
+                }
+            }
+        }
         home_recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = homeAdapter
+            addOnScrollListener(onScrollListener)
             postponeEnterTransition()
             viewTreeObserver.addOnPreDrawListener {
                 startPostponedEnterTransition()

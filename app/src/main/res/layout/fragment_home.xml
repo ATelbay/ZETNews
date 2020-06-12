@@ -57,6 +57,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias=".2" />
 
+        <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:indeterminate="true"
+            android:id="@+id/home_content_progress"
+            android:minHeight="5dp"
+            android:maxHeight="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

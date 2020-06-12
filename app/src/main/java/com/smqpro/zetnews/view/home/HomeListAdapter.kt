@@ -27,7 +27,6 @@ class HomeListAdapter(private val interaction: Interaction? = null) :
             return oldItem == newItem
         }
 
-
     }
 
     private val differ = AsyncListDiffer(this, diffCallback)

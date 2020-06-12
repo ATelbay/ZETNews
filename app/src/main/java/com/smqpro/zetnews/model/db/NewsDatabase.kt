@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
+import com.smqpro.zetnews.model.response.CurrentPage
 import com.smqpro.zetnews.model.response.Result
 
 @Database(
-    entities = [Result::class],
+    entities = [Result::class, CurrentPage::class],
     version = 2
 )
 @TypeConverters(Converters::class)
@@ -32,6 +33,7 @@ abstract class NewsDatabase : RoomDatabase() {
                 NewsDatabase::class.java,
                 "news_db"
             )
+                .fallbackToDestructiveMigration()
                 .build()
 
     }
