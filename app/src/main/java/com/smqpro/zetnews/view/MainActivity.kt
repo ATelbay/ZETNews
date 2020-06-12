@@ -18,9 +18,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.smqpro.zetnews.R
 import com.smqpro.zetnews.model.db.NewsDatabase
 import com.smqpro.zetnews.model.response.CurrentPage
+import com.smqpro.zetnews.util.TAG
 import com.smqpro.zetnews.view.home.HomeFragment
 import com.viven.imagezoom.ImageZoomHelper
-import com.smqpro.zetnews.util.TAG
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity(R.layout.activity_main),
     BottomNavigationView.OnNavigationItemReselectedListener {
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var listener: NavController.OnDestinationChangedListener
     lateinit var navController: NavController
 
     lateinit var imageZoomHelper: ImageZoomHelper
@@ -53,6 +54,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     }
 
+    private fun setListener() {
+        listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.home_fragment -> {
+
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        navController.addOnDestinationChangedListener(listener)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        navController.removeOnDestinationChangedListener(listener)
+    }
+
     private fun setFullScreen() {
         val decorView: View = window.decorView
         // Hide the status bar.
@@ -74,6 +95,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         navController = main_host_fragment.findNavController()
 
         db = NewsDatabase(this)
+
+        setListener()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -91,8 +114,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onNavigationItemReselected(item: MenuItem) {
         when (item.itemId) {
             R.id.home_fragment -> {
-                Log.d(TAG, "onNavigationItemReselected: home clicked")
-//                (main_host_fragment.childFragmentManager.fragments[0] as HomeFragment).scrollToTop()
+                val fragmentStack = main_host_fragment.childFragmentManager.fragments
+                Log.d(TAG, "onNavigationItemReselected: home clicked. fragment Stack size - ${fragmentStack.size}")
+                try {
+                    if (fragmentStack.size == 1)
+                        (fragmentStack[0] as HomeFragment).scrollToTop()
+                } catch (e: Exception) {
+                    Log.d(TAG, "onNavigationItemReselected: $e")
+                }
+
             }
         }
     }

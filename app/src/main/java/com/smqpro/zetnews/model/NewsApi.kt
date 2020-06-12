@@ -22,7 +22,7 @@ interface NewsApi {
         @Query(Constants.ORDER_BY_PARAM)
         order: Constants.ORDER? = Constants.ORDER.NEWEST,
         @Query(Constants.FROM_DATE_PARAM)
-        fromDate: Date? = null,
+        fromDate: String? = "2016-07-18",
         @Query(Constants.PAGE_PARAM)
         page: Int,
         @Query(Constants.SHOW_FIELDS_PARAM)

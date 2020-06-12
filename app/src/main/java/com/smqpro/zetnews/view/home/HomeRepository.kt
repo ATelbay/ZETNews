@@ -1,6 +1,7 @@
 package com.smqpro.zetnews.view.home
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.smqpro.zetnews.model.RetrofitInstance
 import com.smqpro.zetnews.model.db.NewsDatabase
 import com.smqpro.zetnews.model.response.CurrentPage
@@ -42,6 +43,8 @@ class HomeRepository(
     }
 
     fun getCachedNews() = db.getNewsDao().selectCached()
+
+    fun getCachedNewsAsc() = db.getNewsDao().selectCachedAsc()
 
     suspend fun getCurrentPage() = db.getNewsDao().getCurrentPage()
 

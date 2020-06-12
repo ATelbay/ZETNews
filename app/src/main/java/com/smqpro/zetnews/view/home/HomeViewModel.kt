@@ -32,11 +32,9 @@ class HomeViewModel(
     var pages = 1
     var filter = 0
 
-    init {
-        setCurrentPage()
-    }
-
-    val cachedNews = Transformations.map(repository.getCachedNews()) {
+    val cachedNews = Transformations.map(
+      repository.getCachedNews()
+    ) {
         if (it.isNullOrEmpty()) {
             getUpdatedNews()
             Resource.Error<List<Result>>("No cached data. Trying to fetch the data from the network...")
@@ -46,8 +44,6 @@ class HomeViewModel(
     } as LiveData<Resource<List<Result>>>
 
     private fun cacheNews(resultList: List<Result>, resetNews: Boolean) = viewModelScope.launch {
-        if (resetNews) updateCurrentPage(2)
-        else updateCurrentPage(searchPage + 1)
         resultList.forEach {
             it.cache = true
         }
@@ -60,23 +56,13 @@ class HomeViewModel(
         }
     }
 
-    private fun updateCurrentPage(currentPage: Int) = viewModelScope.launch {
-        val currentPageObj = CurrentPage(0, currentPage)
-        repository.upsertCurrentPage(currentPageObj)
-        searchPage = currentPage
-    }
-
-    private fun setCurrentPage() =
-        viewModelScope.launch {
-            searchPage = repository.getCurrentPage()?.currentPage ?: 1
-            pages = searchPage
-        }
-
     fun getUpdatedNews(resetNews: Boolean = true) = viewModelScope.launch {
         news.postValue(Resource.Loading())
         Log.d(TAG, "getUpdatedNews: getting news from the network")
         try {
             if (hasInternetConnection()) {
+                Log.d(TAG, "getUpdatedNews: reset? - $resetNews")
+                if (resetNews) searchPage = 1 else searchPage += 1
                 val order = when (filter) {
                     0 -> Constants.ORDER.NEWEST
                     1 -> Constants.ORDER.OLDEST
@@ -96,8 +82,8 @@ class HomeViewModel(
             }
         } catch (t: Throwable) {
             when (t) {
-                is IOException -> news.postValue(Resource.Error("Failed to connect to the server"))
-                else -> news.postValue(Resource.Error("Error fetching the data"))
+                is IOException -> news.postValue(Resource.Error("Failed to connect to the server: ${t.message}"))
+                else -> news.postValue(Resource.Error("Error fetching the data: ${t.message}"))
             }
         }
 
@@ -109,10 +95,15 @@ class HomeViewModel(
     ): Resource<List<Result>> {
         if (response.isSuccessful) {
             response.body()?.let { resResponse ->
-                cacheNews(resResponse.response.results, resetNews)
+                val resList = resResponse.response.results as MutableList<Result>
+                resList.removeAll {
+                    it.fields.thumbnail.isEmpty()
+                }
+                Log.d(TAG, "handleNewsResponse: ${resList[0].fields.thumbnail.isEmpty()}")
+                cacheNews(resList, resetNews)
                 pages = resResponse.response.pages
                 Log.d(TAG, "handleNewsResponse: number of pages - $pages")
-                return Resource.Success(resResponse.response.results)
+                return Resource.Success(resList)
             }
         }
         return Resource.Error(response.message())

@@ -68,6 +68,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                     home_progress.visibility = View.GONE
                     home_srl.isRefreshing = false
                     homeAdapter.submitList(it.data ?: listOf())
+                    Log.d(TAG, "observeCachedNews: current page - ${viewModel.searchPage}")
                     Log.d(TAG, "observeCachedNews: data size - ${it.data?.size}")
                 }
                 is Resource.Error -> {
@@ -89,6 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
                         "Something went wrong. Try again later",
                         Toast.LENGTH_SHORT
                     ).show()
+                    Log.d(TAG, "observeUpdatedNews: Error - ${it.message}")
                 }
             }
         })
@@ -100,11 +102,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.d(TAG, "onScrollStateChanged: triggered")
+                    Log.d(TAG, "onScrollStateChanged: triggered. Pages - ${viewModel.pages}")
                     if (viewModel.searchPage <= viewModel.pages) {
                         viewModel.getUpdatedNews(false)
                         home_content_progress.visibility = View.VISIBLE
-                        Log.d(TAG, "onScrollStateChanged: current page - ${viewModel.searchPage}")
                     }
                 }
             }

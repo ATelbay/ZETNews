@@ -20,6 +20,9 @@ interface NewsDao {
     @Query("SELECT * FROM news WHERE cache = 1 ORDER BY webPublicationDate DESC")
     fun selectCached(): LiveData<List<Result>>
 
+    @Query("SELECT * FROM news WHERE cache = 1 ORDER BY webPublicationDate ASC")
+    fun selectCachedAsc(): LiveData<List<Result>>
+
     @Query("SELECT * FROM news WHERE liked = 1 ORDER BY updatedAt DESC")
     fun selectLiked(): LiveData<List<Result>>
 
