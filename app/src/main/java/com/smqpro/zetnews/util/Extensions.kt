@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
@@ -70,6 +69,11 @@ fun Any.prettyTime(dateStr: String): String {
         e.printStackTrace()
     }
     return ""
+}
+
+fun Any.dateToString(date: Date): String {
+    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+    return simpleDateFormat.format(date)
 }
 
 fun Any.htmlParse(str: String): String {

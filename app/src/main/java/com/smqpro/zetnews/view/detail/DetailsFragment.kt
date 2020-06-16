@@ -81,8 +81,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             description_fl.minimumHeight = description_image.height
             description_title.text = webTitle
             description_description.text = htmlParse(fields.trailText)
-            Html.fromHtml(fields.trailText).toString()
-
             description_author.text = if (tags.isNotEmpty()) tags[0].webTitle else ""
             description_time.text = prettyTime(webPublicationDate)
             description_category.text = sectionName

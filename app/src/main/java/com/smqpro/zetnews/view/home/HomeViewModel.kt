@@ -7,17 +7,21 @@ import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.smqpro.zetnews.model.NewsApplication
-import com.smqpro.zetnews.model.response.CurrentPage
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
 import com.smqpro.zetnews.util.Resource
 import com.smqpro.zetnews.util.TAG
+import com.smqpro.zetnews.util.dateToString
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
+import java.util.*
 
 class HomeViewModel(
     app: Application,
@@ -25,7 +29,6 @@ class HomeViewModel(
 ) : AndroidViewModel(app) {
     val news = MutableLiveData<Resource<List<Result>>>()
 
-    //    val newsAvailable = MutableLiveData<Boolean>()
     var searchPage = 1
     var query = ""
     var section: String? = null
@@ -33,19 +36,29 @@ class HomeViewModel(
     var filter = 0
 
     val cachedNews = Transformations.map(
-      repository.getCachedNews()
+        repository.getCachedNewsAsc()
     ) {
-        if (it.isNullOrEmpty()) {
+        showNews(it)
+    } as MutableLiveData<Resource<List<Result>>>
+
+    private fun showNews(resList: List<Result>) =
+        if (resList.isNullOrEmpty()) {
             getUpdatedNews()
             Resource.Error<List<Result>>("No cached data. Trying to fetch the data from the network...")
         } else {
-            Resource.Success<List<Result>>(it)
+            Log.d(TAG, "val cachedNews: filter = $filter")
+            Log.d(TAG, "val cachedNews: timestamp - ${resList[0].timestamp}")
+            Resource.Success<List<Result>>(resList)
         }
-    } as LiveData<Resource<List<Result>>>
+
 
     private fun cacheNews(resultList: List<Result>, resetNews: Boolean) = viewModelScope.launch {
         resultList.forEach {
             it.cache = true
+            val calendar: Calendar = Calendar.getInstance()
+            val now: Date = calendar.time
+            it.timestamp = dateToString(now)
+
         }
         if (resetNews) {
             repository.updateCachedNews(resultList)
@@ -64,10 +77,15 @@ class HomeViewModel(
                 Log.d(TAG, "getUpdatedNews: reset? - $resetNews")
                 if (resetNews) searchPage = 1 else searchPage += 1
                 val order = when (filter) {
-                    0 -> Constants.ORDER.NEWEST
-                    1 -> Constants.ORDER.OLDEST
-                    2 -> Constants.ORDER.RELEVANCE
-                    else -> Constants.ORDER.NEWEST
+                    0 -> {
+                        Constants.ORDER.NEWEST
+                    }
+                    1 -> {
+                        Constants.ORDER.OLDEST
+                    }
+                    else -> {
+                        Constants.ORDER.RELEVANCE
+                    }
                 }
                 val response =
                     repository.getNews(

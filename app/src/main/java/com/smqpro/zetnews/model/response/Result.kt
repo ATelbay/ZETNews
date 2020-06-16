@@ -27,12 +27,14 @@ data class Result(
     var webTitle: String,
     var webUrl: String,
     var liked: Boolean,
-    var cache: Boolean
+    var cache: Boolean,
+    var timestamp: String
 ) : Serializable {
     constructor() : this(
         "", "", false, "", "",
         "", "", Field("", ""),
-        "", "", "", "", false, false
+        "", "", "", "",
+        false, false, ""
     )
 
     @TypeConverters(Converters::class)

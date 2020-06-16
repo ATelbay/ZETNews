@@ -220,6 +220,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),
 
     }
 
+
     private fun hideRefreshButton() {
         val transAnim = TranslateAnimation(0F, 0F, 0F, -400F)
         transAnim.duration = 500

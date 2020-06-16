@@ -3,6 +3,7 @@ package com.smqpro.zetnews.view.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.smqpro.zetnews.model.response.Result
+import com.smqpro.zetnews.util.dateToString
 import kotlinx.coroutines.launch
 import java.util.*
 

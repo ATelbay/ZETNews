@@ -11,7 +11,7 @@ import com.smqpro.zetnews.model.response.Result
 
 @Database(
     entities = [Result::class, CurrentPage::class],
-    version = 2
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class NewsDatabase : RoomDatabase() {
