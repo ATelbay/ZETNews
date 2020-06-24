@@ -53,13 +53,6 @@ class HomeViewModel(
 
 
     private fun cacheNews(resultList: List<Result>, resetNews: Boolean) = viewModelScope.launch {
-        resultList.forEach {
-            it.cache = true
-            val calendar: Calendar = Calendar.getInstance()
-            val now: Date = calendar.time
-            it.timestamp = dateToString(now)
-
-        }
         if (resetNews) {
             repository.updateCachedNews(resultList)
             Log.d(TAG, "cacheNews: upsert list size - ${resultList.size}")
@@ -116,6 +109,13 @@ class HomeViewModel(
                 val resList = resResponse.response.results as MutableList<Result>
                 resList.removeAll {
                     it.fields.thumbnail.isEmpty()
+                }
+                resList.forEach {
+                    it.cache = true
+                    val calendar: Calendar = Calendar.getInstance()
+                    val now: Date = calendar.time
+                    it.timestamp = dateToString(now)
+
                 }
                 Log.d(TAG, "handleNewsResponse: ${resList[0].fields.thumbnail.isEmpty()}")
                 cacheNews(resList, resetNews)
