@@ -53,6 +53,14 @@
     <string name="liked_news">Liked news</string>
     <string name="resfresh">Resfresh</string>
     <string name="saved_news">Your saved news will be displayed here</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="e_mail">E-mail</string>
+    <string name="authentication">Authentication</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="havent_registered_yet">Haven\'t registered yet?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="account_picture">account_picture</string>
 
     <string-array name="filter_by_date">
         <item>Newest</item>

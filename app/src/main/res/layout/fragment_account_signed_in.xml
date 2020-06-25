@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.account.AccountFragment">
+
+    <View
+        android:id="@+id/signed_in_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/darkBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".15" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/signed_in_cv"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="50dp"
+        app:cardElevation="1dp"
+        app:layout_constraintBottom_toBottomOf="@id/signed_in_line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/signed_in_line">
+
+        <ImageView
+            android:id="@+id/signed_in_picture_iv"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/account_picture"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/burj_khalifa" />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/signed_in_login_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintBottom_toTopOf="@id/signed_in_line"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/the_author" />
+
+    <TextView
+        android:id="@+id/signed_in_mail_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:maxLines="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signed_in_line"
+        tools:text="smqpro@gmail.com" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

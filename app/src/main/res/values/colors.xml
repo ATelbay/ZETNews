@@ -5,5 +5,6 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="transparent">#00000000</color>
     <color name="grey">#707070</color>
-    <color name="dark_background">#FF424242</color>
+    <color name="darkBackground">#FF424242</color>
+    <color name="darkBlue">#1565C0</color>
 </resources>

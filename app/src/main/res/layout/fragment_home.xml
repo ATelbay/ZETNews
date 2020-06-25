@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:backgroundTint="@color/dark_background"
+            android:backgroundTint="@color/darkBackground"
             android:drawableStart="@drawable/ic_arrow_upward"
             android:text="@string/resfresh"
             android:textSize="12sp"

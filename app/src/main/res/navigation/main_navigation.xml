@@ -10,7 +10,15 @@
         android:id="@+id/account_fragment"
         android:name="com.smqpro.zetnews.view.account.AccountFragment"
         android:label="@string/account_fragment"
-        tools:layout="@layout/fragment_account" />
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/reload_fragment"
+            app:destination="@id/account_fragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
     <fragment
         android:id="@+id/details_fragment"
         android:name="com.smqpro.zetnews.view.detail.DetailsFragment"
