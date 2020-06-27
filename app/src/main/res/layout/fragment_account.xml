@@ -72,6 +72,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0"
         app:layout_constraintEnd_toStartOf="@id/account_sign_up_button"
         app:layout_constraintStart_toStartOf="@id/account_password_til"
         app:layout_constraintTop_toBottomOf="@id/account_forgot_pass_button" />
@@ -85,6 +87,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="@string/sign_up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0"
         app:layout_constraintStart_toEndOf="@id/account_login_button"
         app:layout_constraintEnd_toEndOf="@id/account_password_til"
         app:layout_constraintTop_toBottomOf="@id/account_forgot_pass_button" />

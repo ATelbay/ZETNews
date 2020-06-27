@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_account_signed_in.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
@@ -39,14 +40,19 @@ class AccountFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initSignUpUser()
-        initLoginUser()
+        if (fAuth.currentUser != null) {
+            initLogoutUser()
+        } else {
+            initSignUpUser()
+            initLoginUser()
+        }
+
+
     }
 
     override fun onStart() {
         super.onStart()
-        val currentUser = fAuth.currentUser
-        updateUI(currentUser)
+        updateUI(fAuth.currentUser)
     }
 
     private fun updateUI(currentUser: FirebaseUser?) {
@@ -54,6 +60,19 @@ class AccountFragment : Fragment() {
             signed_in_login_tv.text = it.displayName
             signed_in_mail_tv.text = it.email
             signed_in_picture_iv.load(it.photoUrl.toString())
+        }
+    }
+
+    private fun initLogoutUser() {
+        signed_in_logout_button.setOnClickListener {
+            fAuth.signOut()
+            reloadFragment()
+        }
+    }
+
+    private fun initSwitchTheme() {
+        signed_in_switch_theme_button.setOnClickListener {
+
         }
     }
 
@@ -65,9 +84,9 @@ class AccountFragment : Fragment() {
                         fAuth.signInWithEmailAndPassword(
                             account_email_til_et.text.toString(),
                             account_password_til_et.text.toString()
-                        )
+                        ).await()
                         withContext(Dispatchers.Main) {
-                            findNavController().navigate(AccountFragmentDirections.reloadFragment())
+                            reloadFragment()
                         }
                     } catch (e: Exception) {
                         Log.d(TAG, "Auth failed", e)
@@ -92,7 +111,7 @@ class AccountFragment : Fragment() {
                         fAuth.createUserWithEmailAndPassword(
                             account_email_til_et.text.toString(),
                             account_password_til_et.text.toString()
-                        )
+                        ).await()
                         withContext(Dispatchers.Main) {
                             findNavController().navigate(AccountFragmentDirections.reloadFragment())
                         }
@@ -128,6 +147,10 @@ class AccountFragment : Fragment() {
                 account_password_til.error = "Password can not be empty"
             }
         }
+    }
+
+    private fun reloadFragment() {
+        findNavController().navigate(AccountFragmentDirections.reloadFragment())
     }
 
 }

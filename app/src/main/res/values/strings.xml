@@ -61,6 +61,8 @@
     <string name="havent_registered_yet">Haven\'t registered yet?</string>
     <string name="sign_up">Sign up</string>
     <string name="account_picture">account_picture</string>
+    <string name="log_out">Log out</string>
+    <string name="switch_theme">Switch theme</string>
 
     <string-array name="filter_by_date">
         <item>Newest</item>
