@@ -101,38 +101,40 @@ fun ImageView.load(
     loadOnlyFromCache: Boolean = false,
     onLoadingFinished: (px: Int) -> Unit = {}
 ) {
-    val listener = object : RequestListener<Drawable> {
-        override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>?,
-            isFirstResource: Boolean
-        ): Boolean {
-            onLoadingFinished(0)
-            return false
+    if (url.isNotEmpty()) {
+        val listener = object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                onLoadingFinished(0)
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                onLoadingFinished(resource?.intrinsicHeight ?: 0)
+                return false
+            }
         }
 
-        override fun onResourceReady(
-            resource: Drawable?,
-            model: Any?,
-            target: Target<Drawable>?,
-            dataSource: DataSource?,
-            isFirstResource: Boolean
-        ): Boolean {
-            onLoadingFinished(resource?.intrinsicHeight ?: 0)
-            return false
-        }
+
+        val requestOptions = RequestOptions.placeholderOf(R.drawable.aaa)
+            .dontTransform()
+            .onlyRetrieveFromCache(loadOnlyFromCache)
+        Glide.with(this)
+            .load(url)
+            .apply(requestOptions)
+            .listener(listener)
+            .into(this)
     }
-
-
-    val requestOptions = RequestOptions.placeholderOf(R.drawable.aaa)
-        .dontTransform()
-        .onlyRetrieveFromCache(loadOnlyFromCache)
-    Glide.with(this)
-        .load(url)
-        .apply(requestOptions)
-        .listener(listener)
-        .into(this)
 
 }
 

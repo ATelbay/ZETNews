@@ -6,6 +6,7 @@
     <color name="transparent">#00000000</color>
     <color name="grey">#B8B8B8</color>
     <color name="darkBackground">#FF424242</color>
+    <color name="dimmingBackground">#4D424242</color>
     <color name="darkBlue">#1565C0</color>
     <color name="lightGrey">#f8f8f8</color>
 </resources>
