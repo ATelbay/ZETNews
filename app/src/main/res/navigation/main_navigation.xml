@@ -12,12 +12,20 @@
         android:label="@string/account_fragment"
         tools:layout="@layout/fragment_account" >
         <action
-            android:id="@+id/reload_fragment"
-            app:destination="@id/account_fragment"
+            android:id="@+id/to_auth_fragment"
+            app:destination="@id/auth_fragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/reload_account_fragment"
+            app:destination="@id/account_fragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/details_fragment"
@@ -107,6 +115,19 @@
         <action
             android:id="@+id/to_web_fragment"
             app:destination="@id/web_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/auth_fragment"
+        android:name="com.smqpro.zetnews.view.account.AuthFragment"
+        tools:layout="@layout/fragment_auth"
+        android:label="AuthFragment" >
+        <action
+            android:id="@+id/reload_auth_fragment"
+            app:destination="@id/auth_fragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"/>
     </fragment>
 
 </navigation>

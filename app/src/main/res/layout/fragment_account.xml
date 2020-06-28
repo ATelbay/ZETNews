@@ -1,96 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:fitsSystemWindows="true"
     tools:context=".view.account.AccountFragment">
 
-    <TextView
-        android:id="@+id/account_auth_tv"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/signed_in_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/authentication"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias=".2"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:backgroundTint="@color/lightGrey"
+        android:fitsSystemWindows="true"
+        android:visibility="gone"
+        tools:visibility="visible">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/account_login_til"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="@string/e_mail"
-        app:layout_constraintTop_toBottomOf="@id/account_auth_tv">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/account_email_til_et"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textEmailAddress" />
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="56dp"
+            app:expandedTitleMarginStart="40dp"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
+            app:title="KEK">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="24dp"
+                android:paddingBottom="24dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/account_password_til"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <View
+                    android:id="@+id/signed_in_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toBottomOf="@id/signed_in_cv"
+                    app:layout_constraintTop_toTopOf="@id/signed_in_cv" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/signed_in_cv"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:cardCornerRadius="50dp"
+                    app:cardElevation="1dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias=".9"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/signed_in_picture_iv"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:contentDescription="@string/account_picture"
+                        android:scaleType="centerCrop"
+                        tools:src="@drawable/burj_khalifa" />
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/signed_in_login_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toTopOf="@id/signed_in_line"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="@string/the_author" />
+
+                <TextView
+                    android:id="@+id/signed_in_mail_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:maxLines="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/signed_in_line"
+                    tools:text="smqpro@gmail.com" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="@string/password"
-        app:layout_constraintTop_toBottomOf="@id/account_login_til"
-        app:passwordToggleEnabled="true">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/account_password_til_et"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textPassword" />
+            android:layout_marginTop="24dp"
+            android:background="@color/lightGrey">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <View
+                android:id="@+id/signed_in_line1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/account_forgot_pass_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:text="@string/forgot_password"
-        android:textColor="@color/darkBlue"
-        app:layout_constraintTop_toBottomOf="@id/account_password_til" />
+            <TextView
+                android:id="@+id/signed_in_switch_theme_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_theme"
+                android:drawablePadding="12dp"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:text="@string/switch_theme"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintTop_toBottomOf="@id/signed_in_line1" />
 
-    <Button
-        android:id="@+id/account_login_button"
-        android:maxLines="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintEnd_toStartOf="@id/account_sign_up_button"
-        app:layout_constraintStart_toStartOf="@id/account_password_til"
-        app:layout_constraintTop_toBottomOf="@id/account_forgot_pass_button" />
+            <View
+                android:id="@+id/signed_in_line2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"
+                app:layout_constraintTop_toBottomOf="@id/signed_in_switch_theme_button" />
 
-    <Button
-        android:id="@+id/account_sign_up_button"
-        android:layout_width="0dp"
-        android:maxLines="1"
-        android:layout_marginTop="24dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="@string/sign_up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintStart_toEndOf="@id/account_login_button"
-        app:layout_constraintEnd_toEndOf="@id/account_password_til"
-        app:layout_constraintTop_toBottomOf="@id/account_forgot_pass_button" />
+            <TextView
+                android:id="@+id/signed_in_auth_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_exit"
+                android:drawablePadding="12dp"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:text="@string/auth"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintTop_toBottomOf="@id/signed_in_line2" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <View
+                android:id="@+id/signed_in_line3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"
+                app:layout_constraintTop_toBottomOf="@id/signed_in_auth_button" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
