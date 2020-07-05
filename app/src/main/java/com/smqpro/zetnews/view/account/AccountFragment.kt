@@ -32,7 +32,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         currentUser?.let {
             signed_in_login_tv.text = it.displayName
             signed_in_mail_tv.text = it.email
-            signed_in_picture_iv.load(it.photoUrl.toString())
+//            signed_in_picture_iv.load(it.photoUrl.toString())
             signed_in_appbar.visibility = View.VISIBLE
             initUpdateProfileButton()
             signed_in_auth_button.text = getString(R.string.log_out)

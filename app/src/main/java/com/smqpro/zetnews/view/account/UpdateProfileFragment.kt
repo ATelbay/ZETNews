@@ -76,7 +76,7 @@ class UpdateProfileFragment : Fragment(R.layout.fragment_update_profile) {
 
     private fun updateUI() {
         fAuth.currentUser?.let { user ->
-            update_profile_picture_iv.load(user.photoUrl.toString())
+//            update_profile_picture_iv.load(user.photoUrl.toString())
             update_profile_login_et.setText(user.displayName)
             update_profile_mail_tv.text = user.email
         }

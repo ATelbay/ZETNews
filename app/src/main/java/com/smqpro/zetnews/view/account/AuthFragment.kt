@@ -63,7 +63,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                             account_password_til_et.text.toString()
                         ).await()
                         withContext(Dispatchers.Main) {
-                            findNavController().navigate(AccountFragmentDirections.reloadAccountFragment())
+                            findNavController().popBackStack()
                         }
                     } catch (e: Exception) {
                         Log.d(TAG, "Auth failed", e)
