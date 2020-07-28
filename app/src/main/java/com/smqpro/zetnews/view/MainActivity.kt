@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     }
 
+    fun amanDolbaeb() {
+        main_toolbar.visibility = View.GONE
+    }
+
     private fun setListener() {
         listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -115,7 +119,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         when (item.itemId) {
             R.id.home_fragment -> {
                 val fragmentStack = main_host_fragment.childFragmentManager.fragments
-                Log.d(TAG, "onNavigationItemReselected: home clicked. fragment Stack size - ${fragmentStack.size}")
+                Log.d(
+                    TAG,
+                    "onNavigationItemReselected: home clicked. fragment Stack size - ${fragmentStack.size}"
+                )
                 try {
                     if (fragmentStack.size == 1)
                         (fragmentStack[0] as HomeFragment).scrollToTop()
@@ -131,34 +138,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         CoroutineScope(Dispatchers.IO).launch {
             db.getNewsDao().truncateCache()
             db.getNewsDao().upsertCurrentPage(CurrentPage(0, 2))
+
         }
         super.onDestroy()
     }
 
-//    override fun onTouchEvent(event: MotionEvent): Boolean {
-//
-//        return when (event.actionMasked) {
-//            MotionEvent.ACTION_DOWN -> {
-//                Log.d(TAG, "Action was DOWN")
-//                true
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//                Log.d(TAG, "Action was MOVE")
-//                true
-//            }
-//            MotionEvent.ACTION_UP -> {
-//                Log.d(TAG, "Action was UP")
-//                true
-//            }
-//            MotionEvent.ACTION_CANCEL -> {
-//                Log.d(TAG, "Action was CANCEL")
-//                true
-//            }
-//            MotionEvent.ACTION_OUTSIDE -> {
-//                Log.d(TAG, "Movement occurred outside bounds of current screen element")
-//                true
-//            }
-//            else -> super.onTouchEvent(event)
-//        }
-//    }
 }
