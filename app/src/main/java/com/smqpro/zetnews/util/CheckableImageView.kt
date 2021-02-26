@@ -8,8 +8,8 @@ import com.smqpro.zetnews.R
 
 
 class CheckableImageView : androidx.appcompat.widget.AppCompatImageView, Checkable {
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     private var mChecked = false
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
