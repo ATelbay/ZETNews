@@ -8,9 +8,6 @@ class Constants {
         /** The Guardian's Base URL */
         const val BASE_URL = "https://content.guardianapis.com";
 
-        /** API_KEY */
-        const val API_KEY = "8c3401b3-3022-4849-8781-826bb87826d1"
-
         /** Parameters  */
         const val QUERY_PARAM = "q"
         const val ORDER_BY_PARAM = "order-by"

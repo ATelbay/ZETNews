@@ -1,5 +1,6 @@
 package com.smqpro.zetnews.model
 
+import com.smqpro.zetnews.BuildConfig
 import com.smqpro.zetnews.model.response.News
 import com.smqpro.zetnews.model.response.Result
 import com.smqpro.zetnews.util.Constants
@@ -14,7 +15,7 @@ interface NewsApi {
         @Query(Constants.SHOW_TAGS_PARAM)
         tags: String = "contributor",
         @Query(Constants.API_KEY_PARAM)
-        API_KEY: String = Constants.API_KEY,
+        API_KEY: String = BuildConfig.API_KEY,
         @Query(Constants.QUERY_PARAM)
         query: String? = null,
         @Query(Constants.SECTION_PARAM)
